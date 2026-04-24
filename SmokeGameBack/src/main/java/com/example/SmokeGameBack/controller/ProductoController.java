@@ -66,4 +66,12 @@ public class ProductoController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/oferta-del-dia")
+    public ResponseEntity<String> obtenerOfertaDelDia() {
+        String oferta = "¡Oferta del día! Europa Universalis IV con 50% de descuento.";
+        return ResponseEntity.ok(oferta);
+    }
 }
+
+
