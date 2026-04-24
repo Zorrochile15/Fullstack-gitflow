@@ -17,7 +17,6 @@ public class ContactoController {
     @Autowired
     private ContactoRepository contactoRepository;
 
-    
     @PostMapping("/enviar")
     public ResponseEntity<?> enviarMensaje(@RequestBody Map<String, String> datos) {
         try {
@@ -34,9 +33,17 @@ public class ContactoController {
         }
     }
 
-    
     @GetMapping
     public List<Contacto> listarMensajes() {
         return contactoRepository.findAll();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarMensaje(@PathVariable Long id) {
+        if (contactoRepository.existsById(id)) {
+            contactoRepository.deleteById(id);
+            return ResponseEntity.ok("Mensaje eliminado correctamente");
+        }
+        return ResponseEntity.notFound().build();
     }
 }
