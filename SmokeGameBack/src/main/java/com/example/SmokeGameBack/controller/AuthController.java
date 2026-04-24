@@ -37,7 +37,7 @@ public class AuthController {
             usuario.setEmail((String) datos.get("email"));
             usuario.setPassword((String) datos.get("password"));
             usuario.setRol((String) datos.get("role"));
-            
+         
             String fechaStr = (String) datos.get("dob"); 
             if (fechaStr != null && !fechaStr.isEmpty()) {
                 usuario.setFechaNacimiento(LocalDate.parse(fechaStr)); 

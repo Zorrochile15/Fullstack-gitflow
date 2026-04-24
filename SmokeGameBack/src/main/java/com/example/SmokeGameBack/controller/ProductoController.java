@@ -36,7 +36,7 @@ public class ProductoController {
     }
 
     
-    @PutMapping("/{id}")
+ @PutMapping("/{id}")
     public ResponseEntity<Producto> updateProduct(@PathVariable Long id, @RequestBody Producto productoDetails) {
         Optional<Producto> productoOptional = productoRepository.findById(id);
 
@@ -48,7 +48,9 @@ public class ProductoController {
             producto.setCategoria(productoDetails.getCategoria());
             producto.setImagenUrl(productoDetails.getImagenUrl());
             producto.setEsServicio(productoDetails.getEsServicio());
-            producto.setStock(productoDetails.getStock()); // Actualizamos stock
+            
+           
+            producto.setStock(productoDetails.getStock()); -- se arreglo el problema
 
             return ResponseEntity.ok(productoRepository.save(producto));
         } else {
@@ -66,4 +68,12 @@ public class ProductoController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/oferta-del-dia")
+    public ResponseEntity<String> obtenerOfertaDelDia() {
+        String oferta = "¡Oferta del día! Europa Universalis IV con 50% de descuento.";
+        return ResponseEntity.ok(oferta);
+    }
 }
+
+
