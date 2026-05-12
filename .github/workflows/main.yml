@@ -32,7 +32,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: snyk auth $SNYK_TOKEN
 
-      # Snyk utilizará el Maven global instalado por GitHub
       - name: Snyk test Java dependencies
         continue-on-error: true
         run: snyk test --severity-threshold=high
@@ -54,6 +53,20 @@ jobs:
     name: Run Tests with JaCoCo
     runs-on: ubuntu-latest
     needs: snyk-scan
+    # Contenedor de MySQL temporal para que Spring Boot pueda conectarse
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+          MYSQL_DATABASE: smokegames_bd
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -72,7 +85,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2
 
-      # Usamos el comando nativo "mvn" en lugar de "./mvnw"
       - name: Build and test
         run: mvn clean verify
 
@@ -88,6 +100,20 @@ jobs:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
     needs: test
+    # SonarCloud también ejecuta pruebas, necesita la base de datos temporal
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+          MYSQL_DATABASE: smokegames_bd
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -101,7 +127,6 @@ jobs:
       - name: Run SonarCloud Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        # Usamos el comando nativo "mvn"
         run: |
           mvn verify sonar:sonar \
             -Dsonar.projectKey=zorrochile15_fullstack-gitflow \
@@ -124,7 +149,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # Usamos el comando nativo "mvn"
       - name: Package application
         run: mvn clean package -DskipTests
 
