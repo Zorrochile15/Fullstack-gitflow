@@ -10,13 +10,20 @@ defaults:
     working-directory: SmokeGameBack
 
 jobs:
-  # 1. Análisis de Seguridad con Snyk
+  # 1. Análisis de Seguridad con Snyk (SCA)
   snyk-scan:
     name: Snyk Security Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      # Snyk necesita Java para analizar las dependencias de Maven
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Install Snyk CLI
         run: npm install -g snyk
@@ -74,7 +81,7 @@ jobs:
           name: jacoco-report
           path: SmokeGameBack/target/site/jacoco/
 
-  # 3. Análisis de Código con SonarCloud
+  # 3. Análisis de Calidad con SonarCloud (SAST)
   sonar-analysis:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
@@ -99,7 +106,7 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${SONAR_TOKEN}
 
-  # 4. Empaquetado final de la aplicación
+  # 4. Empaquetado final de la aplicación (Build)
   build:
     name: Build Jar
     runs-on: ubuntu-latest
