@@ -50,7 +50,7 @@ public class ProductoController {
             producto.setEsServicio(productoDetails.getEsServicio());
             
            
-            producto.setStock(productoDetails.getStock()); -- se arreglo el problema
+            producto.setStock(productoDetails.getStock()); 
 
             return ResponseEntity.ok(productoRepository.save(producto));
         } else {
