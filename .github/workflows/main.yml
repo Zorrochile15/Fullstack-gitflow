@@ -33,13 +33,17 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: snyk auth $SNYK_TOKEN
 
+      # Se dan permisos de ejecución a Maven antes de que Snyk lo use
       - name: Snyk test Java dependencies
-        run: snyk test --severity-threshold=high
+        run: |
+          chmod +x mvnw
+          snyk test -d --severity-threshold=high
 
       - name: Generate Snyk JSON Report
         if: always()
         run: |
           echo "Generando reporte JSON de Snyk..."
+          chmod +x mvnw
           snyk test --json > snyk-report.json || echo "Falló snyk test, pero se continúa"
 
       - name: Upload Snyk JSON Report
